@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>My Story</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Setup Modal -->
+  <div id="setup-overlay" class="overlay hidden">
+    <div class="modal">
+      <h2>One-Time Setup</h2>
+      <p>Enter your Cloudflare Worker URL. Your GitHub token is stored securely inside the Worker — never in your browser.</p>
+      <div class="form-group">
+        <label for="worker-url">Worker URL</label>
+        <input type="url" id="worker-url" placeholder="https://autobiography-proxy.yourname.workers.dev" autocomplete="off" autocapitalize="none">
+        <small>Deploy the worker from <strong>worker/index.js</strong> in this repo. See README for steps.</small>
+      </div>
+      <button class="btn-primary full-width" id="save-settings-btn">Save &amp; Continue</button>
+    </div>
+  </div>
+
+  <div class="app">
+
+    <!-- Header -->
+    <header>
+      <div class="header-content">
+        <div class="header-title">
+          <span class="header-icon">📖</span>
+          <h1>My Story</h1>
+        </div>
+        <button class="icon-btn" id="settings-btn" title="Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Chapter Selector -->
+    <section class="section">
+      <label class="label" for="chapter-select">Chapter</label>
+      <div class="select-wrapper">
+        <select id="chapter-select" class="select">
+          <!-- populated dynamically by app.js -->
+        </select>
+        <svg class="select-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+    </section>
+
+    <!-- Stories within Chapter -->
+    <section class="section">
+      <div class="story-header">
+        <label class="label" style="margin-bottom:0">Story</label>
+        <span class="story-subtext">Tap to select · + to create new</span>
+      </div>
+      <div id="story-chips" class="story-chips">
+        <span class="story-empty">No stories yet — tap + to add one</span>
+      </div>
+    </section>
+
+    <!-- Voice Input -->
+    <section class="section voice-section">
+      <button id="mic-btn" class="mic-btn" aria-label="Toggle voice recording">
+        <svg id="mic-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h-3v2h8v-2h-3v-2.06A9 9 0 0 0 21 12v-2h-2z"/>
+        </svg>
+      </button>
+      <p id="voice-status" class="voice-status">Tap to record voice</p>
+      <p class="voice-hint">Or use the 🎤 on your iPhone keyboard</p>
+    </section>
+
+    <!-- Text Input -->
+    <section class="section">
+      <label class="label" for="entry-text">Your Thought</label>
+      <textarea
+        id="entry-text"
+        class="textarea"
+        placeholder="Speak or type your memory here..."
+        rows="7"
+      ></textarea>
+      <div class="char-count"><span id="char-count">0</span> characters</div>
+    </section>
+
+    <!-- Tags / Keywords (optional) -->
+    <section class="section">
+      <label class="label" for="entry-tags">Keywords <span class="optional">(optional)</span></label>
+      <input
+        type="text"
+        id="entry-tags"
+        class="input"
+        placeholder="e.g. school, father, Mumbai, first job"
+        autocapitalize="none"
+      >
+    </section>
+
+    <!-- Actions -->
+    <section class="section actions">
+      <button class="btn-secondary" aria-label="Clear entry form">Clear</button>
+      <button class="btn-primary" id="submit-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Save to GitHub
+      </button>
+    </section>
+
+    <!-- Status Message -->
+    <div id="status-msg" class="status hidden"></div>
+    <div id="last-saved" class="last-saved hidden"></div>
+
+    <!-- Recent Entries -->
+    <section class="section recent-section">
+      <div class="recent-header">
+        <h3 class="label" style="margin-bottom:0">Recent Entries</h3>
+        <span id="entry-count" class="entry-count"></span>
+      </div>
+      <div id="recent-list" class="recent-list">
+        <p class="empty-msg">No entries yet. Start capturing your story!</p>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
