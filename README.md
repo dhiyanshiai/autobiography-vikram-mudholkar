@@ -17,8 +17,9 @@ Your friend does not need to deploy anything.
 2. In Vercel Project Settings -> Environment Variables, add:
    - `GITHUB_TOKEN` = fine-grained PAT with `Contents: Read and write`
    - `GITHUB_REPO` = `dhiyanshiai/autobiography-vikram-mudholkar`
-   - `BASIC_AUTH_USERNAME` = `dhiyanshiai`
-   - `BASIC_AUTH_PASSWORD` = `saurav`
+   - `APP_LOGIN_USERNAME` = `dhiyanshiai`
+   - `APP_LOGIN_PASSWORD` = `saurav`
+   - `APP_SESSION_TOKEN` = any long random secret (example: 32+ chars)
 3. Deploy
 4. Share the production URL with your friend
 
@@ -63,4 +64,4 @@ Each entry contains frontmatter:
 - Keep `GITHUB_TOKEN` only in Vercel environment variables
 - Never hardcode token in frontend code
 - Use a fine-grained token scoped to this single repository
-- App/API access is protected using Basic Auth via `middleware.js`
+- App/API access is protected with custom login via `login.html`, `api/login.js`, and `middleware.js`

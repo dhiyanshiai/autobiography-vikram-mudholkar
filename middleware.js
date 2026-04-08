@@ -1,45 +1,50 @@
-function unauthorized() {
-  return new Response('Authentication required', {
-    status: 401,
-    headers: {
-      'WWW-Authenticate': 'Basic realm="Secure App", charset="UTF-8"'
+function parseCookies(cookieHeader) {
+  var out = {};
+  if (!cookieHeader) return out;
+  cookieHeader.split(';').forEach(function(part) {
+    var i = part.indexOf('=');
+    if (i > -1) {
+      var key = part.slice(0, i).trim();
+      var val = part.slice(i + 1).trim();
+      out[key] = val;
     }
   });
+  return out;
 }
 
 export function middleware(request) {
-  const expectedUser = process.env.BASIC_AUTH_USERNAME;
-  const expectedPass = process.env.BASIC_AUTH_PASSWORD;
+  const sessionToken = process.env.APP_SESSION_TOKEN;
+  const path = new URL(request.url).pathname;
 
-  if (!expectedUser || !expectedPass) {
-    return new Response('Server auth is not configured', { status: 500 });
+  if (!sessionToken) {
+    return new Response('Server auth is not configured: APP_SESSION_TOKEN missing', { status: 500 });
   }
 
-  const auth = request.headers.get('authorization') || '';
-  if (!auth.startsWith('Basic ')) {
-    return unauthorized();
+  if (
+    path === '/login' ||
+    path === '/login.html' ||
+    path === '/api/login' ||
+    path === '/favicon.ico' ||
+    path.startsWith('/_vercel')
+  ) {
+    return;
   }
 
-  let decoded = '';
-  try {
-    decoded = atob(auth.slice(6));
-  } catch (_) {
-    return unauthorized();
+  const cookies = parseCookies(request.headers.get('cookie') || '');
+  const isAuthed = cookies.app_session === sessionToken;
+
+  if (isAuthed) {
+    return;
   }
 
-  const sep = decoded.indexOf(':');
-  if (sep < 0) {
-    return unauthorized();
+  if (path.startsWith('/api/')) {
+    return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
-  const user = decoded.slice(0, sep);
-  const pass = decoded.slice(sep + 1);
-
-  if (user !== expectedUser || pass !== expectedPass) {
-    return unauthorized();
-  }
-
-  return;
+  return Response.redirect(new URL('/login.html', request.url), 302);
 }
 
 export const config = {
