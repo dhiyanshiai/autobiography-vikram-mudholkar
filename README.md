@@ -8,6 +8,7 @@ Your friend does not need to deploy anything.
 
 - Frontend is hosted on Vercel
 - Backend save API is `api/save-entry.js` on the same Vercel project
+- Backend export API is `api/export-entries.js` for ZIP + Markdown drafting bundle
 - API writes markdown files directly into the configured GitHub repository
 
 ## One-Time Vercel Setup (Owner Only)
@@ -25,6 +26,9 @@ Your friend does not need to deploy anything.
 2. Select chapter/story
 3. Record or type memory
 4. Tap **Save to GitHub**
+5. Tap **Export bundle** anytime to download all saved entries as:
+   - `book-draft-bundle.md` (single combined draft file)
+   - original entry markdown files inside the same ZIP
 
 No setup is needed for normal usage.
 
@@ -46,6 +50,11 @@ Each entry contains frontmatter:
 - `chapter_name`
 - optional `story`
 - optional `tags`
+
+## Chapter Defaults
+
+- App starts with only one default chapter: `Childhood`
+- User can add all other chapters from inside the app
 
 ## Security Notes
 

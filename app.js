@@ -3,14 +3,7 @@
 // ─── Default Chapters ─────────────────────────────────────────────────────────
 
 var DEFAULT_CHAPTERS = [
-  { name: 'Childhood',                              slug: '01-childhood' },
-  { name: 'College Days — Engineering',             slug: '02-college-engineering' },
-  { name: 'Early Career — Work after Engineering',  slug: '03-early-career' },
-  { name: 'The MBA Pivot — Engineering to Finance', slug: '04-mba-pivot' },
-  { name: 'Post-MBA Work — Struggles & Growth',     slug: '05-post-mba-growth' },
-  { name: 'Corporate Journey — Companies & Roles',  slug: '06-corporate-journey' },
-  { name: 'Family Life — Parents, Ancestors, Wife', slug: '07-family-life' },
-  { name: 'Flipkart & the AI Awakening',            slug: '08-flipkart-ai' }
+  { name: 'Childhood', slug: '01-childhood' }
 ];
 
 // ─── Chapter Management ───────────────────────────────────────────────────────
@@ -315,6 +308,42 @@ async function submitEntry() {
   }
 }
 
+async function exportEntriesBundle() {
+  var btn = document.getElementById('export-btn');
+  var original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Exporting...';
+
+  try {
+    var res = await fetch('/api/export-entries');
+    if (!res.ok) {
+      var err = await res.json().catch(function() { return {}; });
+      throw new Error(err.message || ('Export failed with status ' + res.status));
+    }
+
+    var blob = await res.blob();
+    var disposition = res.headers.get('Content-Disposition') || '';
+    var match = disposition.match(/filename="([^"]+)"/);
+    var filename = match ? match[1] : 'autobiography-entries.zip';
+
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    showStatus('Export ready. Download started.', 'success');
+  } catch (e) {
+    showStatus('Export failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+}
+
 // ─── Entry Management ─────────────────────────────────────────────────────────
 
 function clearEntry(skipConfirm) {
@@ -463,6 +492,7 @@ function init() {
   // Wire buttons
   document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
   document.getElementById('settings-btn').addEventListener('click', openSettings);
+  document.getElementById('export-btn').addEventListener('click', exportEntriesBundle);
   document.getElementById('submit-btn').addEventListener('click', submitEntry);
   document.getElementById('mic-btn').addEventListener('click', toggleRecording);
   document.querySelector('.btn-secondary').addEventListener('click', clearEntry);

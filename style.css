@@ -522,6 +522,7 @@ header h1 {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
+  gap: 10px;
 }
 
 .entry-count {
@@ -531,6 +532,35 @@ header h1 {
   background: var(--primary-glow);
   padding: 3px 10px;
   border-radius: 20px;
+}
+
+.recent-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-export {
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 9px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btn-export:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.btn-export:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .entry-item {
@@ -730,4 +760,6 @@ header h1 {
   .mic-btn { width: 76px; height: 76px; }
   .mic-btn svg { width: 30px; height: 30px; }
   .btn-primary, .btn-secondary { font-size: 0.95rem; padding: 14px 16px; }
+  .recent-header { align-items: flex-start; }
+  .recent-tools { flex-wrap: wrap; justify-content: flex-end; }
 }
