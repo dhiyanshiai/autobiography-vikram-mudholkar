@@ -1,24 +1,37 @@
-# My Story - Friend-Safe Template
+# My Story - Hosted Template (Vercel)
 
-This is a clean template copy of the autobiography capture app.
+This version is prepared for easy remote access through a single Vercel link.
 
-What has been sanitized in this copy:
-- Personal entries removed from `entries/`
-- Git history removed (fresh repository required)
-- No default Worker URL in `app.js`
-- Worker requires explicit `GITHUB_REPO` and `ALLOWED_ORIGIN`
+Your friend does not need to deploy anything.
 
-## Quick Setup
+## How It Works
 
-1. Create a new GitHub repository (empty)
-2. Push this folder to that new repo
-3. Enable GitHub Pages for branch `main` and folder `/ (root)`
-4. Deploy `worker/index.js` to Cloudflare Workers
-5. In Worker settings, add secrets/vars:
-   - `GITHUB_TOKEN` (fine-grained PAT with Contents read/write)
-   - `GITHUB_REPO` (`owner/repo-name`)
-   - `ALLOWED_ORIGIN` (`https://<username>.github.io`)
-6. Open the app URL and set your Worker URL in Settings
+- Frontend is hosted on Vercel
+- Backend save API is `api/save-entry.js` on the same Vercel project
+- API writes markdown files directly into the configured GitHub repository
+
+## One-Time Vercel Setup (Owner Only)
+
+1. Import this GitHub repo into Vercel
+2. In Vercel Project Settings -> Environment Variables, add:
+   - `GITHUB_TOKEN` = fine-grained PAT with `Contents: Read and write`
+   - `GITHUB_REPO` = `dhiyanshiai/autobiography-vikram-mudholkar`
+3. Deploy
+4. Share the production URL with your friend
+
+## Friend Usage
+
+1. Open the shared Vercel URL
+2. Select chapter/story
+3. Record or type memory
+4. Tap **Save to GitHub**
+
+No setup is needed for normal usage.
+
+## Optional Advanced Setting
+
+- In app Settings, `Save API URL` defaults to `/api/save-entry`
+- Change only if routing to another backend
 
 ## Entry Format
 
@@ -36,6 +49,6 @@ Each entry contains frontmatter:
 
 ## Security Notes
 
-- Do not hardcode production worker URLs in shared templates.
-- Keep `GITHUB_TOKEN` only in Worker secrets, never in frontend code.
-- Restrict Worker by `ALLOWED_ORIGIN` to your deployed app domain.
+- Keep `GITHUB_TOKEN` only in Vercel environment variables
+- Never hardcode token in frontend code
+- Use a fine-grained token scoped to this single repository

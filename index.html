@@ -13,12 +13,12 @@
   <!-- Setup Modal -->
   <div id="setup-overlay" class="overlay hidden">
     <div class="modal">
-      <h2>One-Time Setup</h2>
-      <p>Enter your Cloudflare Worker URL. Your GitHub token is stored securely inside the Worker — never in your browser.</p>
+      <h2>Optional Setup</h2>
+      <p>Default save API is built in for Vercel (`/api/save-entry`). Change this only if using a custom backend endpoint.</p>
       <div class="form-group">
-        <label for="worker-url">Worker URL</label>
-        <input type="url" id="worker-url" placeholder="https://autobiography-proxy.yourname.workers.dev" autocomplete="off" autocapitalize="none">
-        <small>Deploy the worker from <strong>worker/index.js</strong> in this repo. See README for steps.</small>
+        <label for="worker-url">Save API URL</label>
+        <input type="text" id="worker-url" placeholder="/api/save-entry" autocomplete="off" autocapitalize="none">
+        <small>Leave as default for Vercel hosting.</small>
       </div>
       <button class="btn-primary full-width" id="save-settings-btn">Save &amp; Continue</button>
     </div>

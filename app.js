@@ -127,7 +127,7 @@ function promptAddStory() {
 
 // ─── Settings ────────────────────────────────────────────────────────────────
 
-var WORKER_URL = localStorage.getItem('worker_url') || '';
+var WORKER_URL = localStorage.getItem('worker_url') || '/api/save-entry';
 
 function getSettings() {
   return { workerUrl: localStorage.getItem('worker_url') || '' };
@@ -136,17 +136,18 @@ function getSettings() {
 function saveSettings() {
   var workerUrl = document.getElementById('worker-url').value.trim();
   if (!workerUrl) {
-    showStatus('Please enter your Worker URL.', 'error');
-    return;
+    localStorage.removeItem('worker_url');
+    WORKER_URL = '/api/save-entry';
+  } else {
+    localStorage.setItem('worker_url', workerUrl);
+    WORKER_URL = workerUrl;
   }
-  localStorage.setItem('worker_url', workerUrl);
-  WORKER_URL = workerUrl;
   closeSettings();
   showStatus('Settings saved!', 'success');
 }
 
 function openSettings() {
-  document.getElementById('worker-url').value = localStorage.getItem('worker_url') || '';
+  document.getElementById('worker-url').value = localStorage.getItem('worker_url') || '/api/save-entry';
   document.getElementById('setup-overlay').classList.remove('hidden');
 }
 
@@ -260,8 +261,6 @@ function toBase64(str) {
 // ─── Submit ───────────────────────────────────────────────────────────────────
 
 async function submitEntry() {
-  if (!WORKER_URL) { openSettings(); return; }
-
   var text        = document.getElementById('entry-text').value.trim();
   var chapterSlug = document.getElementById('chapter-select').value;
   var story       = selectedStory;
