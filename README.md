@@ -22,6 +22,9 @@ Your friend does not need to deploy anything.
    - `APP_SESSION_TOKEN` = any long random secret (example: 32+ chars)
 3. Deploy
 4. Share the production URL with your friend
+5. If Vercel env resolution is delayed/misconfigured, app login still falls back to:
+   - Username: `dhiyanshiai`
+   - Password: `saurav`
 
 ## Friend Usage
 

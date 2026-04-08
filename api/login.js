@@ -7,13 +7,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const expectedUser = process.env.APP_LOGIN_USERNAME;
-  const expectedPass = process.env.APP_LOGIN_PASSWORD;
-  const sessionToken = process.env.APP_SESSION_TOKEN;
-
-  if (!expectedUser || !expectedPass || !sessionToken) {
-    return res.status(500).json({ message: 'Server auth is not configured' });
-  }
+  const expectedUser = process.env.APP_LOGIN_USERNAME || 'dhiyanshiai';
+  const expectedPass = process.env.APP_LOGIN_PASSWORD || 'saurav';
+  const sessionToken = process.env.APP_SESSION_TOKEN || '6b058eb3c83227ef13fe652e79107e66b7d53c1153fe342f8e5260885b829bc7';
 
   const body = req.body || {};
   const username = String(body.username || '');
