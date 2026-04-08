@@ -335,11 +335,14 @@ function updateCharCount() {
 
 // ─── Local History ────────────────────────────────────────────────────────────
 
+var HISTORY_PAGE_SIZE = 15;
+var currentHistoryPage = 1;
+
 function addToLocalHistory(entry) {
   var history = getHistory();
   history.unshift(entry);
-  history = history.slice(0, 15);
   localStorage.setItem('entry_history', JSON.stringify(history));
+  currentHistoryPage = 1;
   renderRecentEntries();
 }
 
@@ -352,15 +355,25 @@ function renderRecentEntries() {
   var history   = getHistory();
   var container = document.getElementById('recent-list');
   var countEl   = document.getElementById('entry-count');
+  var pagerEl   = document.getElementById('recent-pagination');
+  var totalEntries = history.length;
+  var totalPages = Math.max(1, Math.ceil(totalEntries / HISTORY_PAGE_SIZE));
 
-  countEl.textContent = history.length ? history.length + ' of 15 shown' : '';
+  if (currentHistoryPage > totalPages) currentHistoryPage = totalPages;
 
-  if (history.length === 0) {
+  countEl.textContent = totalEntries ? totalEntries + ' total' : '';
+
+  if (totalEntries === 0) {
     container.innerHTML = '<p class="empty-msg">No entries yet. Start capturing your story!</p>';
+    pagerEl.innerHTML = '';
     return;
   }
 
-  container.innerHTML = history.map(function(e, idx) {
+  var start = (currentHistoryPage - 1) * HISTORY_PAGE_SIZE;
+  var pageItems = history.slice(start, start + HISTORY_PAGE_SIZE);
+
+  container.innerHTML = pageItems.map(function(e, idx) {
+    var absoluteIdx = start + idx;
     var storyBadge = e.story ? '<span class="entry-story">' + escapeHtml(e.story) + '</span>' : '';
     var fullText = e.text || e.preview;
     var isTruncated = fullText.length > 100;
@@ -372,10 +385,15 @@ function renderRecentEntries() {
       '</div>' +
       '<p class="entry-preview">' + escapeHtml(e.preview) + (isTruncated ? '…' : '') + '</p>' +
       '<div class="entry-full hidden"><p>' + escapeHtml(fullText) + '</p>' +
-        '<button class="btn-reload" data-idx="' + idx + '">Load into editor</button>' +
+        '<button class="btn-reload" data-idx="' + absoluteIdx + '">Load into editor</button>' +
       '</div>' +
     '</div>';
   }).join('');
+
+  pagerEl.innerHTML =
+    '<button class="pager-btn" data-page="' + (currentHistoryPage - 1) + '"' + (currentHistoryPage === 1 ? ' disabled' : '') + '>Previous</button>' +
+    '<span class="pager-info">Page ' + currentHistoryPage + ' of ' + totalPages + '</span>' +
+    '<button class="pager-btn" data-page="' + (currentHistoryPage + 1) + '"' + (currentHistoryPage === totalPages ? ' disabled' : '') + '>Next</button>';
 }
 
 function escapeHtml(str) {
@@ -482,6 +500,16 @@ function init() {
     if (item) {
       var full = item.querySelector('.entry-full');
       if (full) full.classList.toggle('hidden');
+    }
+  });
+
+  document.getElementById('recent-pagination').addEventListener('click', function(e) {
+    var btn = e.target.closest('.pager-btn');
+    if (!btn || btn.disabled) return;
+    var targetPage = parseInt(btn.dataset.page, 10);
+    if (!isNaN(targetPage) && targetPage > 0) {
+      currentHistoryPage = targetPage;
+      renderRecentEntries();
     }
   });
 
