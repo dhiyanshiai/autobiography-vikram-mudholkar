@@ -1,7 +1,5 @@
-import { NextResponse } from 'next/server';
-
 function unauthorized() {
-  return new NextResponse('Authentication required', {
+  return new Response('Authentication required', {
     status: 401,
     headers: {
       'WWW-Authenticate': 'Basic realm="Secure App", charset="UTF-8"'
@@ -14,7 +12,7 @@ export function middleware(request) {
   const expectedPass = process.env.BASIC_AUTH_PASSWORD;
 
   if (!expectedUser || !expectedPass) {
-    return new NextResponse('Server auth is not configured', { status: 500 });
+    return new Response('Server auth is not configured', { status: 500 });
   }
 
   const auth = request.headers.get('authorization') || '';
@@ -41,7 +39,7 @@ export function middleware(request) {
     return unauthorized();
   }
 
-  return NextResponse.next();
+  return;
 }
 
 export const config = {
