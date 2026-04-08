@@ -72,6 +72,12 @@
     var btn = document.getElementById('submit-btn');
     var msg = document.getElementById('msg');
 
+    fetch('/api/session', { method: 'GET' })
+      .then(function(res) {
+        if (res.ok) window.location.href = '/';
+      })
+      .catch(function() {});
+
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
       msg.textContent = '';

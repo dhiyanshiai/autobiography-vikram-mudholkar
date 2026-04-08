@@ -1,5 +1,19 @@
 import JSZip from 'jszip';
 
+function parseCookies(cookieHeader) {
+  const out = {};
+  if (!cookieHeader) return out;
+  cookieHeader.split(';').forEach((part) => {
+    const i = part.indexOf('=');
+    if (i > -1) {
+      const key = part.slice(0, i).trim();
+      const val = part.slice(i + 1).trim();
+      out[key] = val;
+    }
+  });
+  return out;
+}
+
 function decodeGithubContent(encoded) {
   return Buffer.from(String(encoded || '').replace(/\n/g, ''), 'base64').toString('utf8');
 }
@@ -70,9 +84,15 @@ export default async function handler(req, res) {
 
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPO;
+  const sessionToken = process.env.APP_SESSION_TOKEN;
 
-  if (!token || !repo) {
-    return res.status(500).json({ message: 'Server missing GITHUB_TOKEN or GITHUB_REPO' });
+  if (!token || !repo || !sessionToken) {
+    return res.status(500).json({ message: 'Server missing GITHUB_TOKEN, GITHUB_REPO, or APP_SESSION_TOKEN' });
+  }
+
+  const cookies = parseCookies(req.headers.cookie || '');
+  if (cookies.app_session !== sessionToken) {
+    return res.status(401).json({ message: 'Unauthorized' });
   }
 
   try {

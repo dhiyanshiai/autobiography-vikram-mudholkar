@@ -458,6 +458,19 @@ function showStatus(msg, type) {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 function init() {
+  fetch('/api/session', { method: 'GET' })
+    .then(function(res) {
+      if (!res.ok) throw new Error('unauthorized');
+    })
+    .then(function() {
+      startApp();
+    })
+    .catch(function() {
+      window.location.href = '/login.html';
+    });
+}
+
+function startApp() {
   // Render dynamic chapter dropdown
   renderChapterSelect();
 

@@ -64,4 +64,5 @@ Each entry contains frontmatter:
 - Keep `GITHUB_TOKEN` only in Vercel environment variables
 - Never hardcode token in frontend code
 - Use a fine-grained token scoped to this single repository
-- App/API access is protected with custom login via `login.html`, `api/login.js`, and `middleware.js`
+- App/API access is protected with custom login via `login.html` and `api/login.js`
+- Session is validated by `api/session.js` and enforced by app startup + protected APIs
